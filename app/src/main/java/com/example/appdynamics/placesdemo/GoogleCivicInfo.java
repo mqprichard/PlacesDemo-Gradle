@@ -51,9 +51,9 @@ abstract public class GoogleCivicInfo {
 
                 CivicInfo civicInfo =
                         new CivicInfo.Builder(HTTP_TRANSPORT, JSON_FACTORY, httpRequestInitializer)
-                                .setApplicationName("Places")
-                                .setGoogleClientRequestInitializer(KEY_INITIALIZER)
-                                .build();
+                                     .setApplicationName("Places")
+                                     .setGoogleClientRequestInitializer(KEY_INITIALIZER)
+                                     .build();
 
                 RepresentativeInfoResponse representativeInfoResponse = null;
                 try {

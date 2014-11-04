@@ -44,14 +44,6 @@ public abstract class GoogleGeoInfo {
         public BigDecimal getLng() {
             return lng;
         }
-
-        public void setLat(BigDecimal lat) {
-            this.lat = lat;
-        }
-
-        public void setLng(BigDecimal lng) {
-            this.lng = lng;
-        }
     }
 
     public class Geometry implements Serializable {
@@ -59,10 +51,6 @@ public abstract class GoogleGeoInfo {
 
         public Location getLocation() {
             return location;
-        }
-
-        public void setLocation(Location location) {
-            this.location = location;
         }
     }
 

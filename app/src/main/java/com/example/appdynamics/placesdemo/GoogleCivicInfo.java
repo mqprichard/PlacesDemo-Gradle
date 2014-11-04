@@ -33,9 +33,9 @@ import java.io.IOException;
 abstract public class GoogleCivicInfo {
     private static final String TAG = GoogleCivicInfo.class.getName();
 
-    static final HttpTransport HTTP_TRANSPORT = AndroidHttp.newCompatibleTransport();
-    static final GsonFactory JSON_FACTORY = new GsonFactory();
-    static final HttpRequestInitializer httpRequestInitializer = new HttpRequestInitializer() {
+    private static final HttpTransport HTTP_TRANSPORT = AndroidHttp.newCompatibleTransport();
+    private static final GsonFactory JSON_FACTORY = new GsonFactory();
+    private static final HttpRequestInitializer httpRequestInitializer = new HttpRequestInitializer() {
         @Override
         public void initialize(HttpRequest request) throws IOException {
         }

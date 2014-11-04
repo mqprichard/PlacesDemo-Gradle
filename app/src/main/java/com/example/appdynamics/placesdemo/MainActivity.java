@@ -16,6 +16,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.api.services.civicinfo.model.GeographicDivision;
 import com.google.api.services.civicinfo.model.RepresentativeInfoResponse;
@@ -69,8 +70,11 @@ public class MainActivity extends Activity {
         private GoogleGeoInfo.Place mPlace;
         private EditText mAddress;
         private Button mButton;
+        private TextView mLatLegend;
         private TextView mLatitude;
+        private TextView mLngLegend;
         private TextView mLongitude;
+        private TextView mElevationLegend;
         private TextView mElevation;
         private ListView mDivisions;
 
@@ -82,15 +86,17 @@ public class MainActivity extends Activity {
                                  Bundle savedInstanceState) {
             final View rootView = inflater.inflate(R.layout.fragment_main, container, false);
 
-            // Get address to search on and do geo-coding
             mAddress = (EditText) rootView.findViewById(R.id.editText);
             mButton = (Button) rootView.findViewById(R.id.button);
+            mLatLegend = (TextView) rootView.findViewById(R.id.lat_legend);
             mLatitude = (TextView) rootView.findViewById(R.id.text_lat);
+            mLngLegend = (TextView) rootView.findViewById(R.id.lng_legend);
             mLongitude = (TextView) rootView.findViewById(R.id.text_lng);
+            mElevationLegend = (TextView) rootView.findViewById(R.id.elevation_legend);
             mElevation = (TextView) rootView.findViewById(R.id.elevation);
             mDivisions = (ListView) rootView.findViewById(R.id.listView);
 
-            // Get Elevation and Civic Info data when user enters search address
+            // Get Geolocation, Elevation and Civic Info data when user enters search address
             mButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -98,15 +104,17 @@ public class MainActivity extends Activity {
                     Log.d(TAG, "searchAddress: " + searchAddress);
                     if (! searchAddress.isEmpty()) {
                         try {
+                            // Check for Geolocation information first
                             GoogleGeoInfo geoInfo = new GoogleGeoInfo() {
                                 @Override
                                 public void onGeocodeSuccess(PlaceResult places) {
                                     mPlace = places.getResults()[0];
                                     mLocation = mPlace.getGeometry().getLocation();
 
-                                    Log.d(TAG, "Lat/Lng: " + mLocation.getLat() + "," + mLocation.getLng());
-
+                                    // Display Lat/Lng info
+                                    mLatLegend.setText(R.string.lat_legend);
                                     mLatitude.setText(" " + mLocation.getLat().toPlainString());
+                                    mLngLegend.setText(R.string.lng_legend);
                                     mLongitude.setText(" " + mLocation.getLng().toPlainString());
 
                                     // Get elevation from Elevation API
@@ -116,17 +124,23 @@ public class MainActivity extends Activity {
                                     GoogleCivicInfo civicInfo = new GoogleCivicInfo() {
                                         @Override
                                         public void onSuccess(RepresentativeInfoResponse response) {
-                                            Map<String, GeographicDivision> divisionMap = response.getDivisions();
-                                            Collection<GeographicDivision> divisions = divisionMap.values();
+                                            try {
+                                                Map<String, GeographicDivision> divisionMap = response.getDivisions();
+                                                Collection<GeographicDivision> divisions = divisionMap.values();
 
-                                            Log.d(TAG, "Found " + divisions.size() + " divisions");
+                                                // Create ArrayList of geographic divisions
+                                                final ArrayList<String> list = new ArrayList<String>();
+                                                for (GeographicDivision division : divisions)
+                                                    list.add(division.getName());
 
-                                            final ArrayList<String> list = new ArrayList<String>();
-                                            for (GeographicDivision division : divisions)
-                                                list.add(division.getName());
-                                            final ArrayAdapter adapter =
-                                                    new ArrayAdapter(rootView.getContext(), R.layout.division_list, list);
-                                            mDivisions.setAdapter(adapter);
+                                                // Display as ListView
+                                                final ArrayAdapter<String> adapter =
+                                                        new ArrayAdapter<String>(rootView.getContext(), R.layout.division_list, list);
+                                                mDivisions.setAdapter(adapter);
+                                            }
+                                            catch (Exception e) {
+                                                e.printStackTrace();
+                                            }
                                         }
 
                                         @Override
@@ -144,7 +158,7 @@ public class MainActivity extends Activity {
 
                                 @Override
                                 public void onElevationSuccess(ElevationResult elevation) {
-                                    Log.d(TAG, "Elevation: " + elevation.getResults()[0].getElevation().toPlainString());
+                                    mElevationLegend.setText(R.string.elevation_legend);
                                     mElevation.setText(" " + elevation.getResults()[0].getElevation().toPlainString());
                                 }
 

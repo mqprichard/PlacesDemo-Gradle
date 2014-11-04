@@ -3,8 +3,7 @@
 
     <string name="app_name">PlacesDemo</string>
     <string name="action_settings">Settings</string>
-    <string name="enter_address">Enter Address to Search</string>
-    <string name="get_geodata">Get Google Geodata</string>
+    <string name="enter_address">Enter Address</string>
     <string name="lat_legend">Latitude:  </string>
     <string name="lng_legend">Longitude: </string>
     <string name="elevation_legend">Elevation: </string>

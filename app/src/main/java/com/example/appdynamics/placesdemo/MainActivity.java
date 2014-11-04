@@ -11,13 +11,16 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import com.google.api.services.civicinfo.model.GeographicDivision;
 import com.google.api.services.civicinfo.model.RepresentativeInfoResponse;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 
@@ -69,6 +72,7 @@ public class MainActivity extends Activity {
         private TextView mLatitude;
         private TextView mLongitude;
         private TextView mElevation;
+        private ListView mDivisions;
 
         public PlaceholderFragment() {
         }
@@ -84,6 +88,7 @@ public class MainActivity extends Activity {
             mLatitude = (TextView) rootView.findViewById(R.id.text_lat);
             mLongitude = (TextView) rootView.findViewById(R.id.text_lng);
             mElevation = (TextView) rootView.findViewById(R.id.elevation);
+            mDivisions = (ListView) rootView.findViewById(R.id.listView);
 
             // Get Elevation and Civic Info data when user enters search address
             mButton.setOnClickListener(new View.OnClickListener() {
@@ -115,8 +120,13 @@ public class MainActivity extends Activity {
                                             Collection<GeographicDivision> divisions = divisionMap.values();
 
                                             Log.d(TAG, "Found " + divisions.size() + " divisions");
+
+                                            final ArrayList<String> list = new ArrayList<String>();
                                             for (GeographicDivision division : divisions)
-                                                Log.d(TAG, division.getName());
+                                                list.add(division.getName());
+                                            final ArrayAdapter adapter =
+                                                    new ArrayAdapter(rootView.getContext(), R.layout.division_list, list);
+                                            mDivisions.setAdapter(adapter);
                                         }
 
                                         @Override

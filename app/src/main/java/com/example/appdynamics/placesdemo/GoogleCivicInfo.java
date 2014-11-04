@@ -1,6 +1,6 @@
 package com.example.appdynamics.placesdemo;
 
-import android.util.Log;
+import android.os.AsyncTask;
 
 import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.googleapis.services.GoogleClientRequestInitializer;
@@ -13,13 +13,9 @@ import com.google.api.services.civicinfo.CivicInfoRequestInitializer;
 import com.google.api.services.civicinfo.model.*;
 
 import java.io.IOException;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
 
 /**
- * Copyright (c) 2013 Mark Prichard
+ * Copyright (c) 2014 Mark Prichard
  * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,7 +30,7 @@ import java.util.Map;
  * limitations under the License.
  */
 
-public class GoogleCivicInfo {
+abstract public class GoogleCivicInfo {
     private static final String TAG = GoogleCivicInfo.class.getName();
 
     static final HttpTransport HTTP_TRANSPORT = AndroidHttp.newCompatibleTransport();
@@ -45,35 +41,44 @@ public class GoogleCivicInfo {
         }
     };
 
-    public void getInfo (String address) {
-        try {
-            GoogleClientRequestInitializer KEY_INITIALIZER =
-                new CivicInfoRequestInitializer(GooglePlacesKey.API_KEY);
+    public void getInfo(final String address) {
 
-            CivicInfo civicInfo =
-                new CivicInfo.Builder(HTTP_TRANSPORT, JSON_FACTORY, httpRequestInitializer)
-                    .setApplicationName("Places")
-                    .setGoogleClientRequestInitializer(KEY_INITIALIZER)
-                    .build();
+        new AsyncTask<Void, Void, RepresentativeInfoResponse>() {
+            @Override
+            protected RepresentativeInfoResponse doInBackground(Void... params) {
+                GoogleClientRequestInitializer KEY_INITIALIZER =
+                        new CivicInfoRequestInitializer(GooglePlacesKey.API_KEY);
 
-            RepresentativeInfoResponse representativeInfoResponse
-                    = civicInfo.representatives()
-                               .representativeInfoByAddress()
-                               .setAddress(address)
-                               .execute();
+                CivicInfo civicInfo =
+                        new CivicInfo.Builder(HTTP_TRANSPORT, JSON_FACTORY, httpRequestInitializer)
+                                .setApplicationName("Places")
+                                .setGoogleClientRequestInitializer(KEY_INITIALIZER)
+                                .build();
 
-            Map<String, GeographicDivision> divisionMap = representativeInfoResponse.getDivisions();
-            List<Office> offices = representativeInfoResponse.getOffices();
-            List<Official> officials = representativeInfoResponse.getOfficials();
+                RepresentativeInfoResponse representativeInfoResponse = null;
+                try {
+                    representativeInfoResponse = civicInfo.representatives()
+                            .representativeInfoByAddress()
+                            .setAddress(address)
+                            .execute();
+                } catch (IOException exception) {
+                    exception.printStackTrace();
+                }
+                return representativeInfoResponse;
+            }
 
-            Collection<GeographicDivision> divisions = divisionMap.values();
-            Log.d(TAG, "Found " + divisions.size() + " divisions");
-            Iterator<Official> officialIterator = officials.iterator();
-            Log.d(TAG, "Found " + officials.size() + " officials");
-            Iterator<Office> officeIterator = offices.iterator();
-            Log.d(TAG, "Found " + offices.size() + " offices");
-        }
-        catch (IOException exception) {
-        }
+            @Override
+            protected void onPostExecute(RepresentativeInfoResponse representativeInfoResponse) {
+                super.onPostExecute(representativeInfoResponse);
+
+                if (representativeInfoResponse != null)
+                    onSuccess(representativeInfoResponse);
+                else
+                    onFailure();
+            }
+        }.execute();
     }
+
+    abstract public void onSuccess(RepresentativeInfoResponse response);
+    abstract public void onFailure();
 }

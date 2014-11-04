@@ -116,10 +116,10 @@ public abstract class GoogleGeoInfo {
     }
 
     public class ElevationResult implements Serializable {
-        private Elevation results;
+        private Elevation results[];
         private String status;
 
-        public Elevation getResults() {
+        public Elevation[] getResults() {
             return results;
         }
 

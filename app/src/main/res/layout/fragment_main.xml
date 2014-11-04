@@ -78,6 +78,7 @@
         android:layout_height="wrap_content"
         android:text=""
         android:id="@+id/elevation"
+        android:layout_below="@id/text_lng"
         android:layout_toRightOf="@id/elevation_legend"/>
 
     <ListView

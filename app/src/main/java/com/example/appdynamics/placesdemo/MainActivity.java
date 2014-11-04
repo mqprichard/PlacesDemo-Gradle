@@ -15,6 +15,12 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.google.api.services.civicinfo.model.GeographicDivision;
+import com.google.api.services.civicinfo.model.RepresentativeInfoResponse;
+
+import java.util.Collection;
+import java.util.Map;
+
 
 public class MainActivity extends Activity {
     private static final String TAG = MainActivity.class.getName();
@@ -95,15 +101,30 @@ public class MainActivity extends Activity {
 
                                     Log.d(TAG, "Lat/Lng: " + mLocation.getLat() + "," + mLocation.getLng());
 
-                                    mLatitude.setText(mLocation.getLat().toPlainString());
-                                    mLongitude.setText(mLocation.getLng().toPlainString());
+                                    mLatitude.setText(" " + mLocation.getLat().toPlainString());
+                                    mLongitude.setText(" " + mLocation.getLng().toPlainString());
 
                                     // Get elevation from Elevation API
                                     getElevationInfo(mLocation);
 
                                     // Get civic information from Civic Information API
-                                    //GoogleCivicInfo civicInfo = new GoogleCivicInfo();
-                                    //civicInfo.getInfo(mPlace.getFormatted_address());
+                                    GoogleCivicInfo civicInfo = new GoogleCivicInfo() {
+                                        @Override
+                                        public void onSuccess(RepresentativeInfoResponse response) {
+                                            Map<String, GeographicDivision> divisionMap = response.getDivisions();
+                                            Collection<GeographicDivision> divisions = divisionMap.values();
+
+                                            Log.d(TAG, "Found " + divisions.size() + " divisions");
+                                            for (GeographicDivision division : divisions)
+                                                Log.d(TAG, division.getName());
+                                        }
+
+                                        @Override
+                                        public void onFailure() {
+                                            Log.d(TAG, "civicInfo.getInfo() failed");
+                                        }
+                                    };
+                                    civicInfo.getInfo(mPlace.getFormatted_address());
                                 }
 
                                 @Override
@@ -113,8 +134,8 @@ public class MainActivity extends Activity {
 
                                 @Override
                                 public void onElevationSuccess(ElevationResult elevation) {
-                                    Log.d(TAG, elevation.getResults().getElevation().toPlainString());
-                                    mElevation.setText(elevation.getResults().getElevation().toPlainString());
+                                    Log.d(TAG, "Elevation: " + elevation.getResults()[0].getElevation().toPlainString());
+                                    mElevation.setText(" " + elevation.getResults()[0].getElevation().toPlainString());
                                 }
 
                                 @Override
@@ -129,8 +150,6 @@ public class MainActivity extends Activity {
                             e.printStackTrace();
                         }
                     }
-
-
                 }
             });
 

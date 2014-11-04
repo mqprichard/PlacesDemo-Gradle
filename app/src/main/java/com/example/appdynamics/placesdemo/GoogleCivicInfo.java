@@ -58,9 +58,9 @@ abstract public class GoogleCivicInfo {
                 RepresentativeInfoResponse representativeInfoResponse = null;
                 try {
                     representativeInfoResponse = civicInfo.representatives()
-                            .representativeInfoByAddress()
-                            .setAddress(address)
-                            .execute();
+                                                          .representativeInfoByAddress()
+                                                          .setAddress(address)
+                                                          .execute();
                 } catch (IOException exception) {
                     exception.printStackTrace();
                 }

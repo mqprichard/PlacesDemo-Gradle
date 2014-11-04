@@ -27,7 +27,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="@dimen/activity_horizontal_margin"
-        android:text="Search"
+        android:text="@string/search_button"
         android:id="@+id/button"
         android:layout_below="@+id/editText"/>
 

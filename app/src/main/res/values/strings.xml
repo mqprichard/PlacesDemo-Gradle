@@ -7,6 +7,6 @@
     <string name="lat_legend">Latitude:  </string>
     <string name="lng_legend">Longitude: </string>
     <string name="elevation_legend">Elevation: </string>
-    <string name="divisions">Divisions: </string>
+    <string name="search_button">Search</string>
 
 </resources>

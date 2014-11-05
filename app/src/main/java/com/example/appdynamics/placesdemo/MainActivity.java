@@ -20,6 +20,7 @@ import com.google.api.services.civicinfo.model.Office;
 import com.google.api.services.civicinfo.model.Official;
 import com.google.api.services.civicinfo.model.RepresentativeInfoResponse;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -190,7 +191,9 @@ public class MainActivity extends Activity {
                                 public void onElevationSuccess(ElevationResult elevation) {
                                     try {
                                         mElevationLegend.setText(R.string.elevation_legend);
-                                        mElevation.setText(" " + elevation.getResults()[0].getElevation().toPlainString());
+                                        mElevation.setText(" " + elevation.getResults()[0]
+                                                .getElevation()
+                                                .setScale(2, BigDecimal.ROUND_HALF_UP));
                                     } catch (Exception e) {
                                         e.printStackTrace();
                                     }

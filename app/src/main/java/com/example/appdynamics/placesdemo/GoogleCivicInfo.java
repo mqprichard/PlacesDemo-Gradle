@@ -31,7 +31,6 @@ import java.io.IOException;
  */
 
 abstract public class GoogleCivicInfo {
-    private static final String TAG = GoogleCivicInfo.class.getName();
 
     private static final HttpTransport HTTP_TRANSPORT = AndroidHttp.newCompatibleTransport();
     private static final GsonFactory JSON_FACTORY = new GsonFactory();

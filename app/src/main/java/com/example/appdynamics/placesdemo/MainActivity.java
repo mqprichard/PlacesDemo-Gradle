@@ -16,10 +16,14 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.google.api.services.civicinfo.model.GeographicDivision;
+import com.google.api.services.civicinfo.model.Office;
+import com.google.api.services.civicinfo.model.Official;
 import com.google.api.services.civicinfo.model.RepresentativeInfoResponse;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 
@@ -73,9 +77,41 @@ public class MainActivity extends Activity {
         private TextView mLongitude;
         private TextView mElevationLegend;
         private TextView mElevation;
-        private ListView mDivisions;
+        private TextView mOfficialsLegend;
+        private ListView mOfficials;
 
         public PlaceholderFragment() {
+        }
+
+        private ArrayList<String> getElectedOfficials(RepresentativeInfoResponse response) {
+            // Stores list of elected officials with district and office
+            final ArrayList<String> list = new ArrayList<String>();
+
+            // Prepare collections for divisions, offices and officials
+            Map<String, GeographicDivision> divisionMap = response.getDivisions();
+            Collection<GeographicDivision> divisions = divisionMap.values();
+            List<Office> offices = response.getOffices();
+            List<Official> officials = response.getOfficials();
+
+            // Format as: "Official, Office (Division)" and add to list
+            for (GeographicDivision division : divisions) {
+                List<Long> officeIndices = division.getOfficeIndices();
+                for (Long i : officeIndices) {
+                    List<Long> officialsIndices = offices.get(i.intValue()).getOfficialIndices();
+                    for (Long j : officialsIndices) {
+                        list.add(officials.get(j.intValue()).getName()
+                                + ", "
+                                + offices.get(i.intValue()).getName()
+                                + " ("
+                                + division.getName()
+                                + ")");
+                    }
+                }
+            }
+
+            // Sort alphabetically and return
+            Collections.sort(list);
+            return list;
         }
 
         @Override
@@ -91,7 +127,8 @@ public class MainActivity extends Activity {
             mLongitude = (TextView) rootView.findViewById(R.id.text_lng);
             mElevationLegend = (TextView) rootView.findViewById(R.id.elevation_legend);
             mElevation = (TextView) rootView.findViewById(R.id.elevation);
-            mDivisions = (ListView) rootView.findViewById(R.id.listView);
+            mOfficialsLegend = (TextView) rootView.findViewById(R.id.elected_officials_legend);
+            mOfficials = (ListView) rootView.findViewById(R.id.listView);
 
             // Get Geolocation, Elevation and Civic Info data when user enters search address
             mButton.setOnClickListener(new View.OnClickListener() {
@@ -122,18 +159,14 @@ public class MainActivity extends Activity {
                                         @Override
                                         public void onSuccess(RepresentativeInfoResponse response) {
                                             try {
-                                                Map<String, GeographicDivision> divisionMap = response.getDivisions();
-                                                Collection<GeographicDivision> divisions = divisionMap.values();
+                                                // Get list of elected officials by district and office
+                                                final ArrayList<String> list = getElectedOfficials(response);
 
-                                                // Create ArrayList of geographic divisions
-                                                final ArrayList<String> list = new ArrayList<String>();
-                                                for (GeographicDivision division : divisions)
-                                                    list.add(division.getName());
+                                                mOfficialsLegend.setText(R.string.elected_officials_legend);
 
-                                                // Display as ListView
                                                 final ArrayAdapter<String> adapter =
                                                         new ArrayAdapter<String>(rootView.getContext(), R.layout.division_list, list);
-                                                mDivisions.setAdapter(adapter);
+                                                mOfficials.setAdapter(adapter);
                                             }
                                             catch (Exception e) {
                                                 e.printStackTrace();
@@ -155,14 +188,17 @@ public class MainActivity extends Activity {
 
                                 @Override
                                 public void onElevationSuccess(ElevationResult elevation) {
-                                    mElevationLegend.setText(R.string.elevation_legend);
-                                    mElevation.setText(" " + elevation.getResults()[0].getElevation().toPlainString());
+                                    try {
+                                        mElevationLegend.setText(R.string.elevation_legend);
+                                        mElevation.setText(" " + elevation.getResults()[0].getElevation().toPlainString());
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                    }
                                 }
 
                                 @Override
                                 public void onElevationFailure(String status) {
                                     Log.d(TAG, "Error: " + status);
-
                                 }
                             };
                             geoInfo.getGeocodeInfo(searchAddress);

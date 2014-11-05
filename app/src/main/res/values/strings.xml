@@ -8,5 +8,7 @@
     <string name="lng_legend">Longitude: </string>
     <string name="elevation_legend">Elevation: </string>
     <string name="search_button">Search</string>
+    <string name="toast_enter_address">Please enter an address to search</string>
+    <string name="elected_officials_legend">Elected Officials</string>
 
 </resources>

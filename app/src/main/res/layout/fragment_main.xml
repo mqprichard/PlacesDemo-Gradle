@@ -81,13 +81,21 @@
         android:layout_below="@id/text_lng"
         android:layout_toRightOf="@id/elevation_legend"/>
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/activity_horizontal_margin"
+        android:layout_marginTop="@dimen/activity_vertical_margin"
+        android:text=""
+        android:id="@+id/elected_officials_legend"
+        android:layout_below="@id/elevation_legend" />
+
     <ListView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/listView"
-        android:layout_below="@id/elevation"
+        android:layout_below="@id/elected_officials_legend"
         android:layout_marginLeft="@dimen/activity_horizontal_margin"
-        android:layout_marginTop="@dimen/activity_vertical_margin"
         android:layout_alignParentLeft="true"
         android:layout_alignParentRight="true"
         android:layout_alignParentStart="true"

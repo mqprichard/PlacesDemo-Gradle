@@ -13,10 +13,12 @@ package com.example.appdynamics.placesdemo;
 public class GooglePlacesKey {
     public static final String API_KEY = "<your API key>";
 }
+```
 
 Gradle Builds
 -------------
 Import the project into Android Studio (tested with beta 0.9.1).  
 
 To build from the commandline: `gradle clean build`
+
 To install: `gradle installDebug`
